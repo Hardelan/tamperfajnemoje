@@ -6,6 +6,8 @@
 // @match        https://key-drop.com/pl/giveaways*
 // @match        https://key-drop.com/pl/giveaways/list
 // @match        https://key-drop.com/pl/giveaways/list/
+// @updateURL    https://raw.githubusercontent.com/Hardelan/tamperfajnemoje/main/temperfajnemoje.user.js
+// @downloadURL  https://raw.githubusercontent.com/Hardelan/tamperfajnemoje/main/temperfajnemoje.user.js
 // @grant        none
 // ==/UserScript==
 (async function () {
