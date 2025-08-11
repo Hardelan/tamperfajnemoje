@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KeyDropBot - wersja połączona finalna + kliknięcia zamiast usuwania (optymalizacja CPU)
 // @namespace    https://key-drop.com
-// @version      6.0
+// @version      6.1
 // @description  Giveaway + UI cleanup + CPU optymalizacja + kliknięcia zamiast usuwania wybranych elementów
 // @match        https://key-drop.com/pl/giveaways*
 // @match        https://key-drop.com/pl/giveaways/list
@@ -13,11 +13,13 @@
 (async function () {
     'use strict';
 
-    const totalTimeLimit = 165000;
+    const totalTimeLimit = 165000; // 170 sekund (nie używamy już tego do czekania)
     const scriptStart = Date.now();
 
     const classSetsToRemove = [
+        ['avatar-grid', 'relative', 'z-0', 'mx-auto', 'grid', 'max-w-screen-2xl', 'grid-flow-dense', 'content-center', 'items-center', 'justify-center', 'gap-1.5', 'css-x6g6rf'],
         ['z-50', 'flex', '!overflow-x-hidden', 'bg-navy-900', 'backdrop-blur-[3px]', '!scrollbar-thin', '!scrollbar-track-[#23232d]', '!scrollbar-thumb-[#ffcb77]', 'scrollbar-w-[5px]', 'lg:bg-opacity-95'],
+        ['fixed', 'bottom-0', 'left-0', 'right-0', 'top-0', 'z-50', 'flex', 'items-center', 'overflow-auto', 'backdrop-filter-none'],
         ['flex', 'flex-wrap', 'gap-[var(--gap)]', 'md:ml-auto', 'md:items-center', 'lg:flex-nowrap', 'lg:gap-[calc(var(--gap)*2)]'],
         ['flex', 'h-[99px]', 'flex-row', 'items-center', 'gap-2.5', 'overflow-hidden', 'bg-navy-700', '3xl:h-[114px]'],
         ['container', 'flex', 'justify-evenly', 'gap-2', 'py-6', 'sm:gap-12', 'lg:justify-center', 'lg:py-9']
@@ -27,7 +29,7 @@
         return classes.every(c => el.classList.contains(c));
     }
 
-    async function tryRemoveElements() {
+    function tryRemoveElements() {
         const candidates = document.querySelectorAll('div, ul');
         for (const el of candidates) {
             for (const classSet of classSetsToRemove) {
@@ -35,20 +37,6 @@
                     el.remove();
                     break;
                 }
-            }
-
-            // SPECJALNY PRZYPADEK 1: overlay modal z zielonym przyciskiem
-            if (hasAllClasses(el, [
-                'fixed', 'bottom-0', 'left-0', 'right-0', 'top-0', 'z-50', 'flex', 'items-center', 'overflow-auto', 'backdrop-filter-none'
-            ])) {
-                setTimeout(async () => {
-                    const specialBtn = document.querySelector('button.bg-\\[\\#18331F\\].text-\\[\\#77FF9D\\]');
-                    if (specialBtn) {
-                        specialBtn.click();
-                        await new Promise(r => setTimeout(r, 20000));
-                        window.location.replace("https://key-drop.com/pl/giveaways/list/");
-                    }
-                }, 3000);
             }
         }
 
@@ -58,44 +46,23 @@
         const dialog = document.getElementById('headlessui-dialog-:r1n1:');
         if (dialog) dialog.remove();
 
-        // SPECJALNY PRZYPADEK 2: special_case_modal
+        // DODANE: usunięcie elementu div z data-testid="special_case_modal"
         const specialCaseModal = document.querySelector('div[data-testid="special_case_modal"]');
-        if (specialCaseModal) {
-            setTimeout(async () => {
-                const closeBtn = document.querySelector('button.absolute.right-4.top-4.bg-navy-500');
-                if (closeBtn) {
-                    closeBtn.click();
-                    await new Promise(r => setTimeout(r, 5000));
-                }
-            }, 3000);
-        }
+        if (specialCaseModal) specialCaseModal.remove();
     }
 
-    // Harmonogram zamiast MutationObserver
-    function scheduleChecks() {
-        let startTime = Date.now();
-        let interval = setInterval(() => {
-            let elapsed = Date.now() - startTime;
-
-            if (elapsed <= 20000) {
-                tryRemoveElements();
-            } else {
-                clearInterval(interval);
-                let extraRuns = 0;
-                let extraInterval = setInterval(() => {
-                    tryRemoveElements();
-                    extraRuns++;
-                    if (extraRuns >= 10) {
-                        clearInterval(extraInterval);
-                    }
-                }, 5000);
-            }
-        }, 3000);
-    }
+    let mutationTimeout = null;
+    const observer = new MutationObserver(() => {
+        if (mutationTimeout) return;
+        mutationTimeout = setTimeout(() => {
+            tryRemoveElements();
+            mutationTimeout = null;
+        }, 2000);
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
 
     window.addEventListener('load', () => {
         tryRemoveElements();
-        scheduleChecks();
     });
 
     try {
@@ -123,26 +90,26 @@
                 joinButton = btns[btns.length - 1];
                 break;
             }
-            await new Promise(r => setTimeout(r, 2000));
+            await new Promise(r => setTimeout(r, 1000));
         }
 
         if (joinButton) joinButton.click();
 
         let price = null;
         while (Date.now() - start < maxWaitTime) {
-            const priceEl = document.querySelector('[data-testid="case-roll-won-item-price"]');
+            const priceEl = document.querySelector('.mt-2.min-w-\\[200px\\].rounded.bg-gold-800.py-2\\.5.text-center.text-base.font-semibold.leading-none.text-gold-400');
             if (priceEl) {
                 price = parseFloat(priceEl.innerText.replace(/[^\d.,]/g, '').replace(',', '.'));
                 break;
             }
-            await new Promise(r => setTimeout(r, 2000));
+            await new Promise(r => setTimeout(r, 1000));
         }
 
-        if (!price || price >= 150) setTimeout(() => window.location.replace("https://key-drop.com/pl/giveaways/list/"), 3000);
+        if (!price || price >= 200) return waitAndExit();
 
         if (price >= 1) {
             const subStart = Date.now();
-            while (Date.now() - subStart < 4000) {
+            while (Date.now() - subStart < 40000) {
                 await new Promise(r => setTimeout(r, offset));
                 const confirmBtn = document.getElementsByClassName("button h-13 w-full whitespace-nowrap rounded-md bg-[#D6FF6F] px-10 text-left text-xs font-bold uppercase leading-none text-navy-900 disabled:bg-dark-navy-300 disabled:text-navy-200")[0];
                 if (confirmBtn) {
@@ -159,6 +126,7 @@
     }
 
     async function waitAndExit() {
+        // Czekaj 172 sekundy minus czas działania skryptu
         const remaining = 172000 - (Date.now() - scriptStart);
         if (remaining > 0) {
             await new Promise(r => setTimeout(r, remaining));
