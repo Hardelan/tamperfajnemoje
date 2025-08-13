@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KeyDropBot - wersja połączona finalna + kliknięcia zamiast usuwania (optymalizacja CPU)
 // @namespace    https://key-drop.com
-// @version      6.1
+// @version      6.2
 // @description  Giveaway + UI cleanup + CPU optymalizacja + kliknięcia zamiast usuwania wybranych elementów
 // @match        https://key-drop.com/pl/giveaways*
 // @match        https://key-drop.com/pl/giveaways/list
@@ -13,7 +13,7 @@
 (async function () {
     'use strict';
 
-    const totalTimeLimit = 165000; // 170 sekund (nie używamy już tego do czekania)
+    const totalTimeLimit = 165000; 
     const scriptStart = Date.now();
 
     const classSetsToRemove = [
@@ -105,7 +105,7 @@
             await new Promise(r => setTimeout(r, 1000));
         }
 
-        if (!price || price >= 200) return waitAndExit();
+        if (!price || price >= 150) return waitAndExit();
 
         if (price >= 1) {
             const subStart = Date.now();
@@ -126,8 +126,7 @@
     }
 
     async function waitAndExit() {
-        // Czekaj 172 sekundy minus czas działania skryptu
-        const remaining = 172000 - (Date.now() - scriptStart);
+        const remaining = 170000 - (Date.now() - scriptStart);
         if (remaining > 0) {
             await new Promise(r => setTimeout(r, remaining));
         }
