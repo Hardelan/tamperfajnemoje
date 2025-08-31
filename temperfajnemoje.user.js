@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KeyDropBot - wersja połączona finalna + kliknięcia zamiast usuwania (optymalizacja CPU)
 // @namespace    https://key-drop.com
-// @version      6.6
+// @version      6.1
 // @description  Giveaway + UI cleanup + CPU optymalizacja + kliknięcia zamiast usuwania wybranych elementów
 // @match        https://key-drop.com/pl/giveaways*
 // @match        https://key-drop.com/pl/giveaways/list
@@ -13,13 +13,8 @@
 (async function () {
     'use strict';
 
-    const totalTimeLimit = 165000; 
+    const totalTimeLimit = 165000; // 170 sekund (nie używamy już tego do czekania)
     const scriptStart = Date.now();
-    
-    setTimeout(() => {
-    window.location.replace("https://key-drop.com/pl/giveaways/list/");
-    }, 170000);
-
 
     const classSetsToRemove = [
         ['avatar-grid', 'relative', 'z-0', 'mx-auto', 'grid', 'max-w-screen-2xl', 'grid-flow-dense', 'content-center', 'items-center', 'justify-center', 'gap-1.5', 'css-x6g6rf'],
@@ -109,7 +104,9 @@
             }
             await new Promise(r => setTimeout(r, 1000));
         }
-        if (price >= 268){setTimeout(() => {window.location.replace("https://key-drop.com/pl/giveaways/list/");}, 40000);}
+
+        if (!price || price >= 200) return waitAndExit();
+
         if (price >= 1) {
             const subStart = Date.now();
             while (Date.now() - subStart < 40000) {
@@ -122,10 +119,19 @@
             }
         }
 
+        await waitAndExit();
 
     } catch (err) {
         window.location.replace("https://key-drop.com/pl/giveaways/list/");
     }
 
+    async function waitAndExit() {
+        // Czekaj 172 sekundy minus czas działania skryptu
+        const remaining = 172000 - (Date.now() - scriptStart);
+        if (remaining > 0) {
+            await new Promise(r => setTimeout(r, remaining));
+        }
+        window.location.replace("https://key-drop.com/pl/giveaways/list/");
+    }
 
 })();
