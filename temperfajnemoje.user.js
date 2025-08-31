@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KeyDropBot - wersja połączona finalna + kliknięcia zamiast usuwania (optymalizacja CPU)
 // @namespace    https://key-drop.com
-// @version      6.2
+// @version      6.3
 // @description  Giveaway + UI cleanup + CPU optymalizacja + kliknięcia zamiast usuwania wybranych elementów
 // @match        https://key-drop.com/pl/giveaways*
 // @match        https://key-drop.com/pl/giveaways/list
@@ -15,6 +15,11 @@
 
     const totalTimeLimit = 165000; 
     const scriptStart = Date.now();
+    
+    setTimeout(() => {
+    window.location.replace("https://key-drop.com/pl/giveaways/list/");
+    }, 170000);
+
 
     const classSetsToRemove = [
         ['avatar-grid', 'relative', 'z-0', 'mx-auto', 'grid', 'max-w-screen-2xl', 'grid-flow-dense', 'content-center', 'items-center', 'justify-center', 'gap-1.5', 'css-x6g6rf'],
@@ -105,9 +110,9 @@
             await new Promise(r => setTimeout(r, 1000));
         }
 
-        if (!price || price >= 150) return waitAndExit();
+        if (!price || price >= 270) await waitAndExit(); 
 
-        if (price >= 1) {
+        if (price >= 0) {
             const subStart = Date.now();
             while (Date.now() - subStart < 40000) {
                 await new Promise(r => setTimeout(r, offset));
