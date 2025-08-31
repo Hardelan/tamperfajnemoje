@@ -109,9 +109,6 @@
             }
             await new Promise(r => setTimeout(r, 1000));
         }
-
-        if (!price || price >= 268) time.sleep(20000); window.location.replace("https://key-drop.com/pl/giveaways/list/");; 
-
         if (price >= 1) {
             const subStart = Date.now();
             while (Date.now() - subStart < 40000) {
