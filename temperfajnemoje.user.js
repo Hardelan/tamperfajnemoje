@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KeyDropBot - wersja połączona finalna + kliknięcia zamiast usuwania (optymalizacja CPU)
 // @namespace    https://key-drop.com
-// @version      6.5
+// @version      6.6
 // @description  Giveaway + UI cleanup + CPU optymalizacja + kliknięcia zamiast usuwania wybranych elementów
 // @match        https://key-drop.com/pl/giveaways*
 // @match        https://key-drop.com/pl/giveaways/list
@@ -109,6 +109,7 @@
             }
             await new Promise(r => setTimeout(r, 1000));
         }
+        if (price >= 268){setTimeout(() => {window.location.replace("https://key-drop.com/pl/giveaways/list/");}, 40000);}
         if (price >= 1) {
             const subStart = Date.now();
             while (Date.now() - subStart < 40000) {
