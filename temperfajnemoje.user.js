@@ -105,7 +105,7 @@
             await new Promise(r => setTimeout(r, 1000));
         }
 
-        if (!price || price >= 280)  return waitAndExit();
+        if (!price)  return waitAndExit();
 
         if (price >= 1) {
             const subStart = Date.now();
