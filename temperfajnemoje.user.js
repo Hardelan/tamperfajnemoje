@@ -1,10 +1,9 @@
 // ==UserScript==
 // @name         KeyDropBot - wersja połączona finalna + kliknięcia zamiast usuwania (optymalizacja CPU)
 // @namespace    https://key-drop.com
-// @version      6.10
+// @version      7.0
 // @description  Giveaway + UI cleanup + CPU optymalizacja + kliknięcia zamiast usuwania wybranych elementów
-// @match        https://key-drop.com/pl/giveaways*
-// @match        https://key-drop.com/pl/giveaways/list
+// @match        https://key-drop.com/pl/giveaways/keydrop/*
 // @match        https://key-drop.com/pl/giveaways/list/
 // @updateURL    https://raw.githubusercontent.com/Hardelan/tamperfajnemoje/main/temperfajnemoje.user.js
 // @downloadURL  https://raw.githubusercontent.com/Hardelan/tamperfajnemoje/main/temperfajnemoje.user.js
@@ -12,10 +11,6 @@
 // ==/UserScript==
 (async function () {
     'use strict';
-
-    const totalTimeLimit = 165000; // 170 sekund (nie używamy już tego do czekania)
-    const scriptStart = Date.now();
-
     const classSetsToRemove = [
         ['avatar-grid', 'relative', 'z-0', 'mx-auto', 'grid', 'max-w-screen-2xl', 'grid-flow-dense', 'content-center', 'items-center', 'justify-center', 'gap-1.5', 'css-x6g6rf'],
         ['z-50', 'flex', '!overflow-x-hidden', 'bg-navy-900', 'backdrop-blur-[3px]', '!scrollbar-thin', '!scrollbar-track-[#23232d]', '!scrollbar-thumb-[#ffcb77]', 'scrollbar-w-[5px]', 'lg:bg-opacity-95'],
@@ -67,15 +62,14 @@
 
     try {
         const h1 = document.querySelector('h1');
-        if (h1 && ["Error 429", "Internal Server Error"].includes(h1.textContent.trim())) {
-            setTimeout(() => window.location.replace("https://key-drop.com/pl/giveaways/list/"), 3000);
+        if (h1 && ["Error 429", "Internal Server Error"].includes(h1.textContent.trim()))
+        {
             return;
         }
 
         const refreshButton = Array.from(document.querySelectorAll('button span'))
             .find(el => el.textContent.trim() === "Odśwież");
         if (refreshButton) {
-            setTimeout(() => window.location.replace("https://key-drop.com/pl/giveaways/list/"), 3000);
             return;
         }
 
@@ -105,7 +99,7 @@
             await new Promise(r => setTimeout(r, 1000));
         }
 
-        if (!price)  return waitAndExit();
+        if (!price) return;
 
         if (price >= 1) {
             const subStart = Date.now();
@@ -119,19 +113,10 @@
             }
         }
 
-        await waitAndExit();
+        return;
 
     } catch (err) {
-        window.location.replace("https://key-drop.com/pl/giveaways/list/");
-    }
-
-    async function waitAndExit() {
-        // Czekaj 172 sekundy minus czas działania skryptu
-        const remaining = 172000 - (Date.now() - scriptStart);
-        if (remaining > 0) {
-            await new Promise(r => setTimeout(r, remaining));
-        }
-        window.location.replace("https://key-drop.com/pl/giveaways/list/");
+        return;
     }
 
 })();
