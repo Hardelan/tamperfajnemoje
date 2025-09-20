@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KeyDropBot - wersja połączona finalna + kliknięcia zamiast usuwania (optymalizacja CPU)
 // @namespace    https://key-drop.com
-// @version      7.0
+// @version      7.1
 // @description  Giveaway + UI cleanup + CPU optymalizacja + kliknięcia zamiast usuwania wybranych elementów
 // @match        https://key-drop.com/pl/giveaways/keydrop/*
 // @match        https://key-drop.com/pl/giveaways/list/
@@ -64,13 +64,13 @@
         const h1 = document.querySelector('h1');
         if (h1 && ["Error 429", "Internal Server Error"].includes(h1.textContent.trim()))
         {
-            return;
+            location.reload();
         }
 
         const refreshButton = Array.from(document.querySelectorAll('button span'))
             .find(el => el.textContent.trim() === "Odśwież");
         if (refreshButton) {
-            return;
+            location.reload();
         }
 
         const maxWaitTime = 140000;
@@ -99,7 +99,7 @@
             await new Promise(r => setTimeout(r, 1000));
         }
 
-        if (!price) return;
+        if (!price) location.reload();
 
         if (price >= 1) {
             const subStart = Date.now();
