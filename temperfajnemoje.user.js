@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KeyDropBot - wersja połączona finalna + kliknięcia zamiast usuwania (optymalizacja CPU)
 // @namespace    https://key-drop.com
-// @version      7.1
+// @version      7.3
 // @description  Giveaway + UI cleanup + CPU optymalizacja + kliknięcia zamiast usuwania wybranych elementów
 // @match        https://key-drop.com/pl/giveaways/keydrop/*
 // @match        https://key-drop.com/pl/giveaways/list/
@@ -41,7 +41,6 @@
         const dialog = document.getElementById('headlessui-dialog-:r1n1:');
         if (dialog) dialog.remove();
 
-        // DODANE: usunięcie elementu div z data-testid="special_case_modal"
         const specialCaseModal = document.querySelector('div[data-testid="special_case_modal"]');
         if (specialCaseModal) specialCaseModal.remove();
     }
@@ -62,8 +61,7 @@
 
     try {
         const h1 = document.querySelector('h1');
-        if (h1 && ["Error 429", "Internal Server Error"].includes(h1.textContent.trim()))
-        {
+        if (h1 && ["Error 429", "Internal Server Error"].includes(h1.textContent.trim())) {
             location.reload();
         }
 
@@ -74,7 +72,6 @@
         }
 
         const maxWaitTime = 140000;
-        const offset = 1000 * (1 + Math.random());
         const start = Date.now();
 
         let joinButton = null;
@@ -88,29 +85,29 @@
         }
 
         if (joinButton) joinButton.click();
+        else { location.reload(); return; }
 
-        let price = null;
-        while (Date.now() - start < maxWaitTime) {
-            const priceEl = document.querySelector('.mt-2.min-w-\\[200px\\].rounded.bg-gold-800.py-2\\.5.text-center.text-base.font-semibold.leading-none.text-gold-400');
-            if (priceEl) {
-                price = parseFloat(priceEl.innerText.replace(/[^\d.,]/g, '').replace(',', '.'));
-                break;
+        const confirmClass = "button h-13 w-full whitespace-nowrap rounded-md bg-[#D6FF6F] px-10 text-left text-xs font-bold uppercase leading-none text-navy-900 disabled:bg-dark-navy-300 disabled:text-navy-200";
+        const confirmWaitStart = Date.now();
+
+        while (Date.now() - confirmWaitStart < 40000) {
+            const candidates = document.getElementsByClassName(confirmClass);
+            if (candidates.length > 0) {
+                await new Promise(r => setTimeout(r, 1000));
+                const inner = document.querySelector('span.text-navy-400');
+                const containerText = inner && inner.parentElement ? inner.parentElement.textContent.toLowerCase() : '';
+
+                const isAmateur = containerText.includes('amateur');
+
+                if (isAmateur) {
+                    const confirmBtn = candidates[0];
+                    if (confirmBtn) confirmBtn.click();
+                } else {
+                    location.replace("https://key-drop.com/pl/giveaways/list/");
+                }
+                break; // tylko jeden check po znalezieniu confirm
             }
             await new Promise(r => setTimeout(r, 1000));
-        }
-
-        if (!price) location.reload();
-
-        if (price >= 1) {
-            const subStart = Date.now();
-            while (Date.now() - subStart < 40000) {
-                await new Promise(r => setTimeout(r, offset));
-                const confirmBtn = document.getElementsByClassName("button h-13 w-full whitespace-nowrap rounded-md bg-[#D6FF6F] px-10 text-left text-xs font-bold uppercase leading-none text-navy-900 disabled:bg-dark-navy-300 disabled:text-navy-200")[0];
-                if (confirmBtn) {
-                    confirmBtn.click();
-                    break;
-                }
-            }
         }
 
         return;
