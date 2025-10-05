@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KeyDropBot - wersja połączona finalna + kliknięcia zamiast usuwania (optymalizacja CPU)
 // @namespace    https://key-drop.com
-// @version      7.4
+// @version      7.5
 // @description  Giveaway + UI cleanup + CPU optymalizacja + kliknięcia zamiast usuwania wybranych elementów
 // @match        https://key-drop.com/pl/giveaways/keydrop/*
 // @match        https://key-drop.com/pl/giveaways/list/
@@ -101,7 +101,47 @@
 
                 if (isAmateur) {
                     const confirmBtn = candidates[0];
-                    if (confirmBtn) confirmBtn.click();
+
+                    // --- DODANE: sprawdzanie ceny + losowa decyzja wg progów ---
+                    const priceEl = document.querySelector('.mt-2.min-w-\\[200px\\].rounded.bg-gold-800.py-2\\.5.text-center.text-base.font-semibold.leading-none.text-gold-400');
+                    if (!priceEl) {
+                        location.replace("https://key-drop.com/pl/giveaways/list/");
+                        break;
+                    }
+
+                    // Parsowanie wartości (np. "34,50 zł")
+                    const rawPrice = priceEl.textContent || '';
+                    const numMatch = rawPrice.match(/[\d,.]+/);
+                    const price = numMatch ? parseFloat(numMatch[0].replace(',', '.')) : NaN;
+
+                    if (Number.isNaN(price)) {
+                        location.replace("https://key-drop.com/pl/giveaways/list/");
+                        break;
+                    }
+
+                    // Losowa liczba 1–100
+                    const roll = Math.floor(Math.random() * 100) + 1;
+
+                    // Wyznaczenie szansy wg widełek
+                    let chance = 0;
+                    if (price > 50) chance = 100;
+                    else if (price >= 44 && price < 50) chance = 94;
+                    else if (price >= 40 && price < 44) chance = 80;
+                    else if (price >= 37 && price < 40) chance = 77;
+                    else if (price >= 32 && price < 37) chance = 59;
+                    else if (price >= 27 && price < 32) chance = 42;
+                    else if (price >= 23 && price < 26) chance = 41;
+                    else if (price >= 20 && price < 23) chance = 32;
+                    else if (price >= 17 && price < 20) chance = 20;
+                    else if (price >= 15 && price < 17) chance = 9;
+                    // poza zakresem — domyślnie 0% (brak dołączenia)
+
+                    if (chance === 100 || roll > (100 - chance)) {
+                        if (confirmBtn) confirmBtn.click();
+                    } else {
+                        return;
+                    }
+                    // --- KONIEC DODANEGO KODU ---
                 } else {
                     location.replace("https://key-drop.com/pl/giveaways/list/");
                 }
