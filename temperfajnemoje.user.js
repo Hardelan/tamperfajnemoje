@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KeyDropBot - wersja połączona finalna + kliknięcia zamiast usuwania (optymalizacja CPU)
 // @namespace    https://key-drop.com
-// @version      7.7
+// @version      7.8
 // @description  Giveaway + UI cleanup + CPU optymalizacja + kliknięcia zamiast usuwania wybranych elementów
 // @match        https://key-drop.com/pl/giveaways/keydrop/*
 // @match        https://key-drop.com/pl/giveaways/list/
@@ -125,14 +125,14 @@
                     // Wyznaczenie szansy wg widełek
                     let chance = 0;
                     if (price > 60) chance = 100;
-                    else if (price >= 50 && price < 60) chance = 90;
-                    else if (price >= 44 && price < 50) chance = 80;
-                    else if (price >= 40 && price < 44) chance = 45;
-                    else if (price >= 37 && price < 40) chance = 32;
-                    else if (price >= 32 && price < 37) chance = 20;
+                    else if (price >= 50 && price < 60) chance = 100;
+                    else if (price >= 44 && price < 50) chance = 100;
+                    else if (price >= 40 && price < 44) chance = 100;
+                    else if (price >= 37 && price < 40) chance = 80;
+                    else if (price >= 32 && price < 37) chance = 70;
                     else if (price >= 28 && price < 32) chance = 5;
-                    else if (price >= 23 && price < 26) chance = 12;
-                    else if (price >= 21 && price < 23) chance = 4;
+                    else if (price >= 23 && price < 26) chance = 20;
+                    else if (price >= 21 && price < 23) chance = 5;
                     // poza zakresem — domyślnie 0% (brak dołączenia)
 
                     if (chance === 100 || roll > (100 - chance)) {
