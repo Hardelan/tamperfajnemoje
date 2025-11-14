@@ -126,7 +126,7 @@
                     let chance = 0;
                     if (price > 60) chance = 100;
                     else if (price >= 32 && price < 60) chance = 100;
-                    else if (price >= 29 && price < 32) chance = 30;
+                    else if (price >= 29 && price < 32) chance = 100;
                     // poza zakresem — domyślnie 0% (brak dołączenia)
 
                     if (chance === 100 || roll > (100 - chance)) {
