@@ -125,9 +125,9 @@
                     // Wyznaczenie szansy wg widełek
                     let chance = 0;
                     if (price >= 40) chance = 100;   
-                    else if (price >= 35 && price < 40) chance = 100;
-                    else if (price >= 30 && price < 35) chance = 80;
-                    else if (price >= 25 && price < 30) chance = 15;
+                    else if (price >= 35 && price < 40) chance = 90;
+                    else if (price >= 30 && price < 35) chance = 70;
+                    else if (price >= 25 && price < 30) chance = 10;
                     // poza zakresem — domyślnie 0% (brak dołączenia)
 
                     if (chance === 100 || roll > (100 - chance)) {
