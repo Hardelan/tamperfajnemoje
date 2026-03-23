@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         KeyDropBot - wersja połączona finalna + kliknięcia zamiast usuwania (optymalizacja CPU)
 // @namespace    https://key-drop.com
-// @version      7.22
+// @version      7.23
 // @description  Giveaway + UI cleanup + CPU optymalizacja + kliknięcia zamiast usuwania wybranych elementów
 // @match        https://key-drop.com/pl/giveaways/keydrop/*
 // @match        https://key-drop.com/pl/giveaways/list/
